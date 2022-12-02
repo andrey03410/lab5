@@ -1,85 +1,46 @@
 <?php
-if (!file_exists('./data')) {
-    mkdir('./data');
-}
+include_once 'dbController.php';
+$database = new dbController();
+$database->connect();
+$database->createTable();
 ?>
-<h1>Добавить название категории</h1>
-<form action="index.php" method="post">
-    <input type="text" name="category" placeholder="Название категории">
-    <input type="submit" value="Добавить">
-</form>
-<?php
-if (!empty($_POST['category'])) {
-    $category = $_POST['category'];
-    $path = "./data/" . $category;
-    if (!file_exists($path)) {
-        mkdir($path);
-    }
-}
 
-?>
-<h1>Добавить объявление</h1>
 <form action="index.php" method="post">
-    <input type="text" name="title" placeholder="Заголовок объявления">
-    <textarea name="text" cols="30" rows="10" placeholder="Текст объявления"></textarea>
-    <input type="text" name="email" placeholder="Email">
-    <select name="category">
-        <?php
-        $dir = "./data/";
-        $files = scandir($dir);
-        foreach ($files as $file) {
-            if ($file != "." && $file != "..") {
-                echo "<option value='$file'>$file</option>";
-            }
-        }
-        ?>
-    </select>
-    <input type="submit" value="Добавить">
+    <label for="titles">Titles</label>
+    <input type="text" name="titles" id="titles">
+    <label for="name">Name</label>
+    <input type="text" name="name" id="name">
+    <label for="description">Description</label>
+    <input type="text" name="description" id="description">
+    <label for="email">Email</label>
+    <input type="text" name="email" id="email">
+    <input type="submit" name="submit" value="Submit">
 </form>
-<?php
 
-if (!empty($_POST['category']) && !empty($_POST['title']) && !empty($_POST['text']) && !empty($_POST['email'])) {
-    $category = $_POST['category'];
-    $title = $_POST['title'];
-    $text = $_POST['text'];
-    $email = $_POST['email'];
-    $path = "./data/" . $category . "/" . $title . ".txt";
-    if (!file_exists($path)) {
-        $file = fopen($path, "w");
-        fwrite($file, $text . "\n" . $email);
-        fclose($file);
-    }
+<?php
+if (isset($_POST['submit'])) {
+    $database->add($_POST['titles'], $_POST['name'], $_POST['description'], $_POST['email']);
 }
 ?>
-<h1>Список объявлений</h1>
 
 <table>
     <tr>
-        <th>title</th>
-        <th>description</th>
-        <th>category</th>
+        <th>Titles</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Email</th>
     </tr>
     <?php
-    $files = scandir($dir);
-    foreach ($files as $file) {
-        if ($file != "." && $file != "..") {
-            $path = "./data/" . $file;
-            $files2 = scandir($path);
-            foreach ($files2 as $file2) {
-                if ($file2 != "." && $file2 != "..") {
-                    $path2 = "./data/" . $file . "/" . $file2;
-                    $file3 = fopen($path2, "r");
-                    $text = fgets($file3);
-                    $email = fgets($file3);
-                    fclose($file3);
-                    echo "<tr>";
-                    echo "<td>" . substr($file2, 0, -4) . "</td>";
-                    echo "<td>" . $text . "</td>";
-                    echo "<td>" . $file . "</td>";
-                    echo "</tr>";
-                }
-            }
-        }
+    $result = $database->get();
+    while ($row = $result->fetch_assoc()) {
+        ?>
+        <tr>
+            <td><?php echo $row['titles']; ?></td>
+            <td><?php echo $row['name']; ?></td>
+            <td><?php echo $row['description']; ?></td>
+            <td><?php echo $row['email']; ?></td>
+        </tr>
+        <?php
     }
     ?>
 </table>
