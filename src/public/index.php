@@ -19,7 +19,7 @@ $database->createTable();
 
 <?php
 if (isset($_POST['submit'])) {
-    $database->add($_POST['titles'], $_POST['name'], $_POST['description'], $_POST['email']);
+    $database->addAdvert($_POST['titles'], $_POST['name'], $_POST['description'], $_POST['email']);
 }
 ?>
 
@@ -31,7 +31,7 @@ if (isset($_POST['submit'])) {
         <th>Email</th>
     </tr>
     <?php
-    $result = $database->get();
+    $result = $database->getAdverts();
     while ($row = $result->fetch_assoc()) {
         ?>
         <tr>

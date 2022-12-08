@@ -6,7 +6,11 @@ class dbController
 
     public function connect()
     {
-        $this->db = new mysqli('db', 'root', 'test123', 'web');
+        try {
+            $this->db = new mysqli('db', 'root', 'test123', 'web');
+        } catch (Exception $e) {
+            echo 'Error connecting to database';
+        }
     }
 
     public function createTable()
@@ -21,7 +25,7 @@ class dbController
         $this->db->query($sql);
     }
 
-    public function add($titles, $name, $desc, $email)
+    public function addAdvert($titles, $name, $desc, $email)
     {
         $sql = "INSERT INTO adverts(titles, name, description, email) VALUES(
             '{$titles}',
@@ -32,7 +36,7 @@ class dbController
         $this->db->query($sql);
     }
 
-    public function get()
+    public function getAdverts()
     {
         $sql = "SELECT * FROM adverts";
         $result = $this->db->query($sql);
